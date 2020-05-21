@@ -39,9 +39,9 @@ func (ce CodeErr) Error() string {
 	return fmt.Sprintf("%d:%v", ce.Code, ce.Err)
 }
 
-// Code return code from err
-// return CodeOk when err is nil
-// return CodeUnknown when err is not CodeErr
+// Code return code from err.
+// It returns CodeOk when err is nil.
+// It returns CodeUnknown when err is not CodeErr.
 func Code(err error) int {
 	if err == nil {
 		return CodeOk
