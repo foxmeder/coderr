@@ -30,24 +30,25 @@ const (
 
 // CodeErr error with code
 type CodeErr struct {
-	Code int
-	Err  error
+	code int
+	err  error
 }
 
 // Error implement error
 func (ce CodeErr) Error() string {
-	return fmt.Sprintf("%d:%v", ce.Code, ce.Err)
+	return fmt.Sprintf("%d:%v", ce.code, ce.err)
 }
 
-// Code return code from err.
+// Code return code from the first error in err's chain that matches CodeErr .
 // It returns CodeOk when err is nil.
-// It returns CodeUnknown when err is not CodeErr.
+// It returns CodeUnknown if no CodeErr matched.
 func Code(err error) int {
 	if err == nil {
 		return CodeOk
 	}
-	if c, ok := err.(CodeErr); ok {
-		return c.Code
+	c := CodeErr{}
+	if errors.As(err, &c) {
+		return c.code
 	} else {
 		return CodeUnknown
 	}
@@ -56,16 +57,16 @@ func Code(err error) int {
 // Error return new CodeErr
 func Error(code int, msg string) error {
 	return CodeErr{
-		Code: code,
-		Err:  errors.New(msg),
+		code: code,
+		err:  errors.New(msg),
 	}
 }
 
 // FromError create CodeErr with code from err
 func FromError(code int, err error) error {
 	return CodeErr{
-		Code: code,
-		Err:  err,
+		code: code,
+		err:  err,
 	}
 }
 
